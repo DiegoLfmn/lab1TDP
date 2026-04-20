@@ -1,0 +1,25 @@
+listo
+--------
+- revisar makefile
+- mucha repeticion new+if+push -> arreglar
+- cambiar closed por all -> evitar buscar 2 veces
+
+
+por revisar
+-----------
+- cambiar por estructura mas rapida
+- documentacion --> comentarios
+- cambiar var a nombre ingleses
+- memoria volando --> hacer delete
+- hacer un isEmpty
+
+
+Tarea (ejemplo)
+-----------
+- Hacer clases Tablero, Bloque, Salida, Portal
+- Hacer clase Background
+- Cambiar State -> cambiar test
+- Hacer clases de operaciones
+- clase para cargar archivo, menu
+- Hacer que solver encuentre sol caso simple
+
