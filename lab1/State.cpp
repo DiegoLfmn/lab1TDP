@@ -1,41 +1,57 @@
 #include "State.h"
 
 /*
-constructor vacio, asigna -1 a ambos bidones para indicar que no se han inicializado.
+constructor vacio, para inicializar todo en valores por defecto.
 */
 State::State() {
-  B5 = -1;
-  B3 = -1;
+  bloques = nullptr;
+  numBloques = 0;
+  tiempo = 0;
   operacion = "";
   parent = nullptr;
+  F = 0;
 }
 
-State::State(int B5, 
-          int B3,
-          string op, 
-          State* p,
-          float f) {
-  this->B5 = B5;
-  this->B3 = B3;
+State::State(BlockState* bloques, int numBloques, int tiempo, string op, State* p, float f) {
+  this->numBloques = numBloques;
+  this->tiempo = tiempo;
   this->operacion = op;
   this->parent = p;
   this->F = f;
+
+  this ->bloques = new BlockState[numBloques];
+  for (int i = 0; i < numBloques; i++) {
+    this->bloques[i] = bloques[i];
+  }
 }
 
+State::~State(){
+  if(bloques != nullptr){
+    delete[] bloques;
+  }
+
+}
 bool State::esFinal() {
-  // el estado final es aquel en el que el bidón de 5 litros tiene exactamente 4 litros.
-  return B5 == 4;
+  return numBloques == 0;
 }
 
 void State::print() {
-  cout << "B5: " << B5 << " B3: " << B3 << "operacion: " << operacion << " F: " << F << endl;
+  cout << "Tiempo: " << tiempo << " segundos" << endl;
+  cout << "Operacion: " << operacion << endl;
+  cout << "Bloques: " << endl;
+  for (int i = 0; i < numBloques; i++) {
+    cout << "Bloque " << bloques[i].id << ": (" << bloques[i].x << ", " << bloques[i].y << ")" << endl;
+  }
 }
 
 void State::printOperaciones() {
   if (parent != nullptr) {
     parent->printOperaciones();
   }
-  print();
+  
+  if(operacion != ""){
+    cout << operacion << " ";
+  }
 }
 
 

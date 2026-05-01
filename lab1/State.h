@@ -8,22 +8,34 @@ using namespace std;
 /*
 Esta clase corresponde al estado del problema de los bidones.
 */
-
+struct BlockState {
+    int id;
+    int x;
+    int y;
+};
 class State {
   public:
   // datos:variables de instancia
-  int B5;
-  int B3;
+  BlockState* bloques; // arreglo de bloques
+  int numBloques;
+  int tiempo; // tiempo transcurrido para llegar a este estado
+
+
+
   string operacion;
   State* parent;
   float F; // costo total
+
   // constructor
   State(); // constructor vacio
-  State(int B5, 
-        int B3, 
-        string op, 
-        State* p,
-        float f); // constructor con parámetros
+  State(BlockState* bloques, int numBloques, int tiempo, string operacion, State* parent, float F); // constructor con parámetros
+  
+  
+  ~State(); // destructor
+
+  
+  
+  
   // métodos
   bool esFinal(); // si este estado es el estado final.
   void print(); // imprime el estado
