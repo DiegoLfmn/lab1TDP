@@ -31,6 +31,8 @@ testSolver: Heap.o Operation.o Llenar3.o Llenar5.o Vaciar3.o Vaciar5.o Trasv35.o
 	g++ -g Heap.o Operation.o Llenar3.o Llenar5.o Vaciar3.o Vaciar5.o Trasv35.o Trasv53.o Solver.o Stack.o State.o testSolver.cpp -o testSolver
 testHeap: Heap.o State.o testHeap.cpp
 	g++ -g Heap.o State.o testHeap.cpp -o testHeap
+testTablero: testTablero.cpp Tablero.cpp State.cpp
+	g++ -o testTablero testTablero.cpp Tablero.cpp State.cpp
 
 clean: 
-	rm -f *.o testState testStack testSolver testHeap
+	rm -f *.o testState testStack testSolver testHeap testTablero

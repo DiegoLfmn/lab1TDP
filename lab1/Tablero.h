@@ -56,6 +56,8 @@ class Tablero {
 
     State* generarEstadoInicial();
 
+    void printTablero();
+
 
     
 };
