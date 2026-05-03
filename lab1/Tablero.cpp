@@ -3,10 +3,9 @@
 Tablero::Tablero() {
     paredes = nullptr;
     blockConfigs = nullptr;
-    numBlocks = 0;
     exitConfigs = nullptr;
-    numExits = 0; 
-    
+    numBlocks = 0;
+    numExits = 0;
     width = 0;
     height = 0;
     stepLimit = 0;
@@ -15,33 +14,60 @@ Tablero::Tablero() {
 
 Tablero::~Tablero() {
     if (paredes != nullptr) {
-        for (int i = 0; i < height; i++) {
-            delete[] paredes[i];
-        }
+        for (int i = 0; i < height; i++) delete[] paredes[i];
         delete[] paredes;
     }
-
-    for(int i =0 ;i <numBlocks; i++){
-        delete[] blockConfigs[i].geometry;
+    if (blockConfigs != nullptr) {
+        for (int i = 0; i < numBlocks; i++) {
+            if (blockConfigs[i].geometry != nullptr) delete[] blockConfigs[i].geometry;
+        }
+        delete[] blockConfigs;
     }
-    delete[] blockConfigs;
-    delete[] exitConfigs;
+    if (exitConfigs != nullptr) delete[] exitConfigs;
 }
 // extreamos el numero entero que esta despues de una etiqueta en caso que sea width o height, etc
 int Tablero::extraerEntero(string linea, string etiqueta){
     size_t pos = linea.find(etiqueta);
     if(pos == string::npos) return 0;
+
     pos += etiqueta.length();
+
+    while(pos < linea.length() && linea[pos] == ' ' || linea[pos] == '='){
+        pos++;
+    }
+
     size_t fin = linea.find(' ',pos);
     if(fin == string::npos) fin = linea.length();
+
+    if(pos >= fin) return 0;
+    
     return stoi(linea.substr(pos, fin - pos));
+
+    /*
+    try {
+        return stoi(linea.substr(pos, fin - pos));
+    }
+    catch (...)
+    {
+        return 0;
+    }
+    
+    
+    */
 }
 // extreamos caracter para el color
 char Tablero::extraerCaracter(string linea, string etiqueta){
     size_t pos = linea.find(etiqueta);
     if(pos == string::npos) return ' ';
+
     pos += etiqueta.length();
-    return linea[pos];
+    while(pos < linea.length() && linea[pos] == ' ' || linea[pos] == '='){
+        pos++;
+    }
+    if(pos < linea.length()){
+        return linea[pos];
+    }
+    return ' ';
 }
 
 bool Tablero::cargarArchivo(string filename) {
@@ -50,94 +76,100 @@ bool Tablero::cargarArchivo(string filename) {
     
     string line, section = "";
     int blockIndex = 0;
+    int wallRow = 0;
+
     while (getline(file, line)) {
-        if(!line.empty() && line.back() == '\r') {
-            line.pop_back(); // Eliminar el carácter de retorno de carro
-        }
-        if (line.empty()) continue;
-
-        if (line[0] == '['){
+        if(!line.empty() && line.back() == '\r') line.pop_back();
+        if(line.empty()) continue;
+        if(line[0] == '[') {
             section = line;
-            continue;   
+            continue;
         }
-        if(section == "[META]"){
-            if(line.find("WIDTH") != string::npos){
-                width = extraerEntero(line, "WIDTH= ");
-            } else if(line.find("HEIGHT") != string::npos){
-                height = extraerEntero(line, "HEIGHT= ");
-            } else if(line.find("STEP_LIMIT") != string::npos){
-                stepLimit = extraerEntero(line, "STEP_LIMIT= ");
-            } else if (line.find("NAME") != string::npos){
-                nombre = line.substr(line.find("NAME= ") + 6);
+        if (section == "[META]") {
+            if (line.find("WIDTH") != string::npos) width = extraerEntero(line, "WIDTH");
+            else if (line.find("HEIGHT") != string::npos) height = extraerEntero(line, "HEIGHT");
+            else if (line.find("STEP_LIMIT") != string::npos) stepLimit = extraerEntero(line, "STEP_LIMIT");
+            else if (line.find("NAME") != string::npos) {
+                size_t pos = line.find("NAME");
+                pos += 4;
+                while (pos < line.length() && (line[pos] == ' ' || line[pos] == '=')) pos++;
+                nombre = line.substr(pos);
             }
-            
         }
-        else if (section == "[BLOCK]"){
-            if (blockConfigs == nullptr){
-                blockConfigs = new BlockConfig[20]; // maximo 100 bloques
-            }
-            // id extraida
-            int id = stoi(line.substr(0,line.find(' ')));
-        
-            // extramos atributos 
-            char color = extraerCaracter(line, "COLOR= ");
-            int w = extraerEntero(line, "WIDTH= ");
-            int h = extraerEntero(line, "HEIGHT= ");
-            int init_x = extraerEntero(line, "INIT_X= ");
-            int init_y = extraerEntero(line, "INIT_Y= ");
+        else if (section == "[WALL]") {
+            if (width <= 0 || height <= 0) continue; // Protección si los metadatos fallaron
 
-            // gemoetria de obtenida a partir de la "matriz"
-            bool *gemetria = new bool[w * h];
-            size_t geoPos = line.find("GEOMETRY= ") + 10;
-            if(geoPos != string::npos){
-                geoPos += 9; // saltamos "GEOMETRY= " y el espacio
-                int contador = 0;
-                while(geoPos != string::npos){
-                    if(line[geoPos] == '1'){
-                        gemetria[contador] = true;
-                        contador++;
-                    } else if (line[geoPos] == '0'){
-                        gemetria[contador] = false;
-                        contador++;
+            if (paredes == nullptr) {
+                paredes = new char*[height];
+                for(int i = 0; i < height; i++) paredes[i] = new char[width];
+            }
+
+            if (wallRow < height) {
+                for (int col = 0; col < width; col++) {
+                    if (col < line.length()) paredes[wallRow][col] = line[col];
+                    else paredes[wallRow][col] = ' '; // Relleno con espacios si la línea es corta
+                }
+                wallRow++;
+            }
+        }
+        else if (section == "[BLOCK]") {
+            if (blockConfigs == nullptr) blockConfigs = new BlockConfig[30]; // Margen seguro
+
+            size_t firstSpace = line.find(' ');
+            if (firstSpace == string::npos) continue; // Si la línea está mal, la saltamos
+
+            int id = 0;
+            try { id = stoi(line.substr(0, firstSpace)); } catch(...) {}
+
+            char color = extraerCaracter(line, "COLOR");
+            int w = extraerEntero(line, "WIDTH");
+            int h = extraerEntero(line, "HEIGHT");
+            int ix = extraerEntero(line, "INIT_X");
+            int iy = extraerEntero(line, "INIT_Y");
+
+            bool* geometria = nullptr;
+            if (w > 0 && h > 0) {
+                geometria = new bool[w * h]; 
+                for(int i = 0; i < (w * h); i++) geometria[i] = false; // Llenamos de 0 por seguridad
+
+                size_t geoPos = line.find("GEOMETRY");
+                if (geoPos != string::npos) {
+                    geoPos += 8;
+                    while (geoPos < line.length() && (line[geoPos] == ' ' || line[geoPos] == '=')) geoPos++;
+                    
+                    int contador = 0;
+                    while(geoPos < line.length() && contador < (w * h)) {
+                        if (line[geoPos] == '1') { geometria[contador] = true; contador++; }
+                        else if (line[geoPos] == '0') { geometria[contador] = false; contador++; }
+                        geoPos++;
                     }
-                    geoPos++;
                 }
             }
 
-            // guardar arregllo interno del tablero
             blockConfigs[blockIndex].id = id;
             blockConfigs[blockIndex].color = color;
             blockConfigs[blockIndex].width = w;
             blockConfigs[blockIndex].height = h;
-            blockConfigs[blockIndex].init_x = init_x;
-            blockConfigs[blockIndex].init_y = init_y;
-            blockConfigs[blockIndex].geometry = gemetria;
+            blockConfigs[blockIndex].init_x = ix;
+            blockConfigs[blockIndex].init_y = iy;
+            blockConfigs[blockIndex].geometry = geometria;
+            
             blockIndex++;
             numBlocks = blockIndex;
         }
+        
         //salida
-        else if(section == "[EXIT]"){
-            if(exitConfigs == nullptr){
-                exitConfigs = new ExitConfig[20]; // maximo 20 salidas
-            }
+        else if (section == "[EXIT]") {
+            if (exitConfigs == nullptr) exitConfigs = new ExitConfig[30]; // Margen seguro
 
-            char color = extraerCaracter(line, "COLOR= ");
-            int x = extraerEntero(line, "X= ");
-            int y = extraerEntero(line, "Y= ");
-            char orientation = extraerCaracter(line, "ORIENTATION= ");
-            int li = extraerEntero(line, "LI= ");
-            int lf = extraerEntero(line, "LF= ");
-            int step = extraerEntero(line, "STEP= ");
+            exitConfigs[numExits].color = extraerCaracter(line, "COLOR");
+            exitConfigs[numExits].x = extraerEntero(line, "X");
+            exitConfigs[numExits].y = extraerEntero(line, "Y");
+            exitConfigs[numExits].orientation = extraerCaracter(line, "ORIENTATION");
+            exitConfigs[numExits].li = extraerEntero(line, "LI");
+            exitConfigs[numExits].lf = extraerEntero(line, "LF");
+            exitConfigs[numExits].step = extraerEntero(line, "STEP");
 
-
-            //guardamos arreglo interno de salidas
-            exitConfigs[numExits].color = color;
-            exitConfigs[numExits].x = x;
-            exitConfigs[numExits].y = y;
-            exitConfigs[numExits].orientation = orientation;
-            exitConfigs[numExits].li = li;
-            exitConfigs[numExits].lf = lf;
-            exitConfigs[numExits].step = step;
             numExits++;
         }
 
@@ -152,10 +184,10 @@ State* Tablero:: generarEstadoInicial(){
 
     for(int i =0 ; i < numBlocks; i++){
         inicialBlocks[i].id = blockConfigs[i].id;
+        inicialBlocks[i].x = blockConfigs[i].init_x;
+        inicialBlocks[i].y = blockConfigs[i].init_y;
     }
     return new State(inicialBlocks, numBlocks, 0, "",nullptr, 0);
-
-
 }
 
 void Tablero::printTablero(){
@@ -169,7 +201,7 @@ void Tablero::printTablero(){
     if(paredes != nullptr){
         for(int i=0;i< height;i++){
             for(int j = 0; j< width; j++){
-                cout << paredes[i][j] << " ";
+                cout << paredes[i][j];
             }
             cout << endl;
         }
