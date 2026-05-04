@@ -1,19 +1,55 @@
+#include <iostream>
+#include "Tablero.h"
 #include "State.h"
+#include "Operation.h"
+
+using namespace std;
 
 int main() {
-  State s1(5, 0, "llenar B5", nullptr, 0);
-  s1.print();
-  State s2(2, 3, "tras 53", &s1, 0);
-  s2.print();
-  State s3(2, 0, "vaciar 3", &s2, 0);
-  s3.print();
-  State s4(0, 2, "tras 53", &s3, 0);
-  s4.print();
-  State s5(5, 2, "llenar B5", &s4, 0);
-  s5.print();
-  State s6(4, 3, "tras 53", &s5, 0);
-  s6.print();
+    Tablero miTablero;
+    
+    cout << "Cargando archivo facil1_corregido.txt..." << endl;
+    if (!miTablero.cargarArchivo("facil1_corregido.txt")) {
+        cout << "ERROR: No se pudo abrir el archivo." << endl;
+        return 1;
+    }
 
-  s6.printOperaciones();
-  return 0;
+    // 1. Generamos el estado inicial
+    State* estadoActual = miTablero.generarEstadoInicial();
+    cout << "\n=== ESTADO INICIAL ===" << endl;
+    estadoActual->print();
+
+    // 2. PRUEBA: Mover el Bloque 1 hacia Abajo por 1 paso
+    cout << "\n>>> INTENTANDO: Mover Bloque 1 hacia ABAJO (1 paso)..." << endl;
+    MoveDown prueba1(1, 1, &miTablero); // ID=1, Pasos=1, Tablero
+
+    if (prueba1.isAppl(estadoActual)) {
+        cout << "[EXITO] Movimiento legal. Aplicando..." << endl;
+        State* estadoNuevo = prueba1.apply(estadoActual);
+        estadoNuevo->print();
+        
+        // Lo guardamos como nuestro nuevo estado actual para la siguiente prueba
+        delete estadoActual; 
+        estadoActual = estadoNuevo;
+    } else {
+        cout << "[ERROR] Movimiento Ilegal! Chocaste con una pared o bloque." << endl;
+    }
+
+    // 3. PRUEBA: Mover el Bloque 1 hacia Arriba por 5 pasos (Para forzar un choque con la pared)
+    cout << "\n>>> INTENTANDO: Mover Bloque 1 hacia ARRIBA (5 pasos)..." << endl;
+    MoveUp prueba2(1, 5, &miTablero);
+
+    if (prueba2.isAppl(estadoActual)) {
+        cout << "[EXITO] Movimiento legal. Aplicando..." << endl;
+        State* estadoNuevo = prueba2.apply(estadoActual);
+        estadoNuevo->print();
+        delete estadoActual;
+        estadoActual = estadoNuevo;
+    } else {
+        cout << "[ERROR] Movimiento Ilegal! Chocaste con una pared o bloque." << endl;
+    }
+
+    // Limpiamos la memoria al final
+    delete estadoActual;
+    return 0;
 }

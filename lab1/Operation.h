@@ -4,14 +4,52 @@
 #include<iostream>
 #include<string>
 #include "State.h"
+#include "Tablero.h"
 using namespace std;
 
 class Operation {
   public:
-    string name;
+    int block_id;
+    int pasos;
+    Tablero* tablero; // referencia al tablero para verificar la validez de la operación
+    
     Operation(); // nececitamos un constructor vacío para crear un arreglo de operaciones
-    Operation(string n); // puede ser útil para crear operaciones con un nombre específico
-    virtual bool isAppl(State* s);
-    virtual State* apply(State* s);
+    Operation(int b_id, int pasos, Tablero* tablero); // constructor con parámetros
+    virtual ~Operation(); // destructor virtual para permitir la herencia
+
+    virtual bool isAppl(State* current) = 0;
+    virtual State* apply(State* current)= 0;
+
+    bool hayBloqueEnPosicion(State* current, int x, int y, int excluido_id); // método para verificar si hay un bloque en una posición dada
+
+};
+
+
+class MoveUp : public Operation {
+  public:
+    MoveUp(int b_id, int pasos, Tablero* tablero);
+    bool isAppl(State* current) override;
+    State* apply(State* current) override;
+};
+
+class MoveDown : public Operation {
+  public:
+    MoveDown(int b_id, int pasos, Tablero* tablero);
+    bool isAppl(State* current) override;
+    State* apply(State* current) override;
+};
+
+class MoveLeft : public Operation {
+  public:
+    MoveLeft(int b_id, int pasos, Tablero* tablero);
+    bool isAppl(State* current) override;
+    State* apply(State* current) override;
+};
+
+class MoveRight : public Operation {
+  public:
+    MoveRight(int b_id, int pasos, Tablero* tablero);
+    bool isAppl(State* current) override;
+    State* apply(State* current) override;
 };
 #endif // OPERATION_H

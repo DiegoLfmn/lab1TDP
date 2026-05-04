@@ -23,8 +23,8 @@ Trasv53.o: Trasv53.cpp Trasv53.h
 Heap.o: Heap.cpp Heap.h
 	g++ -g -c Heap.cpp
 
-testState: State.o testState.cpp
-	g++ -g State.o testState.cpp -o testState
+testState: testState.cpp State.cpp Tablero.cpp Operation.cpp
+	g++ -o testState testState.cpp State.cpp Tablero.cpp Operation.cpp
 testStack: State.o Stack.o testStack.cpp 
 	g++ -g State.o Stack.o testStack.cpp -o testStack
 testSolver: Heap.o Operation.o Llenar3.o Llenar5.o Vaciar3.o Vaciar5.o Trasv35.o Trasv53.o Solver.o Heap.o Stack.o State.o testSolver.cpp 
