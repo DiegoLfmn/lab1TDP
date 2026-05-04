@@ -9,7 +9,7 @@ State::State() {
   tiempo = 0;
   operacion = "";
   parent = nullptr;
-  F = 0;
+  f = 0;
 }
 
 State::State(BlockState* bloques, int numBloques, int tiempo, string op, State* p, float f) {
@@ -17,7 +17,7 @@ State::State(BlockState* bloques, int numBloques, int tiempo, string op, State* 
   this->tiempo = tiempo;
   this->operacion = op;
   this->parent = p;
-  this->F = f;
+  this->f = f;
 
   this ->bloques = new BlockState[numBloques];
   for (int i = 0; i < numBloques; i++) {

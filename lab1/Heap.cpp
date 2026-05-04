@@ -32,8 +32,7 @@ void Heap::push(State* s){
 }
 
 void Heap::heapifyUp(int index){
-    while(index>0 && 
-          arr[(index-1)/2]->F < arr[index]->F){
+    while(index > 0 && arr[(index-1)/2]->f > arr[index]->f){
         State* temp = arr[index];
         arr[index] = arr[(index-1)/2];
         arr[(index-1)/2] = temp;
@@ -53,20 +52,23 @@ State* Heap::pop(){
 }
 
 void Heap::heapifyDown(int index){
-    int largest = index;
+    int smallest = index; 
     int left = 2*index + 1;
     int right = 2*index + 2;
-    if(left < size && arr[left]->F > arr[largest]->F){
-        largest = left;
+    
+   
+    if(left < size && arr[left]->f < arr[smallest]->f){
+        smallest = left;
     }
-    if(right < size && arr[right]->F > arr[largest]->F){
-        largest = right;
+    if(right < size && arr[right]->f < arr[smallest]->f){
+        smallest = right;
     }
-    if(largest != index){
+    
+    if(smallest != index){
         State* temp = arr[index];
-        arr[index] = arr[largest];
-        arr[largest] = temp;
-        heapifyDown(largest);
+        arr[index] = arr[smallest];
+        arr[smallest] = temp;
+        heapifyDown(smallest);
     }
 }
 

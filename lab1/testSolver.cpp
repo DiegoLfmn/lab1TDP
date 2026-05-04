@@ -1,16 +1,22 @@
+#include <iostream>
+#include "Tablero.h"
 #include "Solver.h"
 
+using namespace std;
+
 int main() {
-  State* s = new State(0,0,"inicio",nullptr,0);
+    Tablero miTablero;
+    
+    cout << "=== COLOR BLOCK JAM - SOLVER A* ===" << endl;
+    
+    // Cambia el nombre del archivo si quieres probar facil2 o medios
+    if (!miTablero.cargarArchivo("facil1_corregido.txt")) {
+        cout << "ERROR: No se pudo abrir el archivo de mapa." << endl;
+        return 1;
+    }
 
-  Solver bot;
-  State* final = bot.solve(s);
+    Solver ia(&miTablero);
+    ia.solve(); // ¡Que comience el juego!
 
-  if (final!=nullptr) {
-    cout << "Solucion encontrada!" << endl;
-    final->printOperaciones();
-  } else {
-    cout << "No se encontro solucion" << endl;
-  }
-
+    return 0;
 }

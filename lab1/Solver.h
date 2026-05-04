@@ -1,21 +1,29 @@
+#ifndef SOLVER_H
+#define SOLVER_H
+
 #include <iostream>
-#include<string>
-#include "Stack.h"
+#include <string>
+#include "Tree.h"
 #include "Heap.h"
-#include "Llenar3.h"
-#include "Llenar5.h"
-#include "Vaciar3.h"
-#include "Vaciar5.h"
-#include "Trasv35.h"
-#include "Trasv53.h"
+#include "State.h"
+#include "Operation.h"
+#include "Tablero.h"
+
 using namespace std;
 
 
-#define N_OPER 6
-
 class Solver {
-  public:
-    Operation* O[N_OPER];
-    Solver();
-    State* solve(State* initial); // retorna estado final o nullptr sino tiene solucion
+private:
+  Tablero* tablero;
+  Heap* open; // estdos por explorar
+  Tree* closed; // estados ya explorados, para evitar ciclos y no volver a explorar los mismos estados
+  int nodosExpandidos;
+  int calcularHeuristica(State* s);
+public: 
+  Solver(Tablero* tablero);
+  ~Solver();
+
+  void solve();
 };
+
+#endif

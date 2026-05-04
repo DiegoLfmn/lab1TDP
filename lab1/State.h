@@ -24,7 +24,7 @@ class State {
 
   string operacion;
   State* parent;
-  float F; // costo total
+  float f; // costo total
 
   // constructor
   State(); // constructor vacio

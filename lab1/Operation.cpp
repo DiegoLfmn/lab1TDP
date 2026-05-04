@@ -170,7 +170,15 @@ State* MoveUp::apply(State* current) {
     for (int i = 0; i < current->numBloques; i++) { if (current->bloques[i].id == block_id) { idx = i; break; } }
     
     bool escapo = seEscapa(current->bloques[idx].x, current->bloques[idx].y - pasos, block_id);
-    int new_numBloques = escapo ? current->numBloques - 1 : current->numBloques;
+    int new_numBloques;
+    if(escapo == true){
+        // Si el bloque se escapa, el nuevo número de bloques es uno menos que el actual
+        new_numBloques = current->numBloques - 1;
+    } else {
+        // Si el bloque no se escapa, el número de bloques permanece igual
+        new_numBloques = current->numBloques;
+    }
+    // int new_numBloques = escapo ? current->numBloques - 1 : current->numBloques;
     
     BlockState* tempBloques = nullptr;
     if (new_numBloques > 0) tempBloques = new BlockState[new_numBloques];
@@ -235,7 +243,15 @@ State* MoveDown::apply(State* current) {
     for (int i = 0; i < current->numBloques; i++) { if (current->bloques[i].id == block_id) { idx = i; break; } }
     
     bool escapo = seEscapa(current->bloques[idx].x, current->bloques[idx].y + pasos, block_id);
-    int new_numBloques = escapo ? current->numBloques - 1 : current->numBloques;
+    int new_numBloques;
+    if(escapo == true){
+        // Si el bloque se escapa, el nuevo número de bloques es uno menos que el actual
+        new_numBloques = current->numBloques - 1;
+    } else {
+        // Si el bloque no se escapa, el número de bloques permanece igual
+        new_numBloques = current->numBloques;
+    }
+    // int new_numBloques = escapo ? current->numBloques - 1 : current->numBloques;
     
     BlockState* tempBloques = nullptr;
     if (new_numBloques > 0) tempBloques = new BlockState[new_numBloques];
@@ -300,7 +316,15 @@ State* MoveLeft::apply(State* current) {
     for (int i = 0; i < current->numBloques; i++) { if (current->bloques[i].id == block_id) { idx = i; break; } }
     
     bool escapo = seEscapa(current->bloques[idx].x - pasos, current->bloques[idx].y, block_id);
-    int new_numBloques = escapo ? current->numBloques - 1 : current->numBloques;
+    int new_numBloques;
+    if(escapo == true){
+        // Si el bloque se escapa, el nuevo número de bloques es uno menos que el actual
+        new_numBloques = current->numBloques - 1;
+    } else {
+        // Si el bloque no se escapa, el número de bloques permanece igual
+        new_numBloques = current->numBloques;
+    }
+    //int new_numBloques = escapo ? current->numBloques - 1 : current->numBloques;
     
     BlockState* tempBloques = nullptr;
     if (new_numBloques > 0) tempBloques = new BlockState[new_numBloques];
@@ -364,7 +388,16 @@ State* MoveRight::apply(State* current) {
     for (int i = 0; i < current->numBloques; i++) { if (current->bloques[i].id == block_id) { idx = i; break; } }
     
     bool escapo = seEscapa(current->bloques[idx].x + pasos, current->bloques[idx].y, block_id);
-    int new_numBloques = escapo ? current->numBloques - 1 : current->numBloques;
+    int new_numBloques;
+    if(escapo == true){
+        // Si el bloque se escapa, el nuevo número de bloques es uno menos que el actual
+        new_numBloques = current->numBloques - 1;
+    } else {
+        // Si el bloque no se escapa, el número de bloques permanece igual
+        new_numBloques = current->numBloques;
+    }
+    
+    //int new_numBloques = escapo ? current->numBloques - 1 : current->numBloques;
     
     BlockState* tempBloques = nullptr;
     if (new_numBloques > 0) tempBloques = new BlockState[new_numBloques];

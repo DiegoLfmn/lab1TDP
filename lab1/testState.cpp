@@ -19,34 +19,35 @@ int main() {
     cout << "\n=== ESTADO INICIAL ===" << endl;
     estadoActual->print();
 
-    // 2. PRUEBA: Mover el Bloque 1 hacia Abajo por 1 paso
+    // 2. PRUEBA DE COLISION (Debería dar error por chocar con el bloque 4)
     cout << "\n>>> INTENTANDO: Mover Bloque 1 hacia ABAJO (1 paso)..." << endl;
-    MoveDown prueba1(1, 1, &miTablero); // ID=1, Pasos=1, Tablero
-
+    MoveDown prueba1(1, 1, &miTablero);
+    
     if (prueba1.isAppl(estadoActual)) {
         cout << "[EXITO] Movimiento legal. Aplicando..." << endl;
         State* estadoNuevo = prueba1.apply(estadoActual);
-        estadoNuevo->print();
-        
-        // Lo guardamos como nuestro nuevo estado actual para la siguiente prueba
         delete estadoActual; 
         estadoActual = estadoNuevo;
     } else {
         cout << "[ERROR] Movimiento Ilegal! Chocaste con una pared o bloque." << endl;
     }
 
-    // 3. PRUEBA: Mover el Bloque 1 hacia Arriba por 5 pasos (Para forzar un choque con la pared)
-    cout << "\n>>> INTENTANDO: Mover Bloque 1 hacia ARRIBA (5 pasos)..." << endl;
-    MoveUp prueba2(1, 5, &miTablero);
+    // 3. PRUEBA DE ESCAPE HACIA UNA SALIDA
+    // Vamos a forzar un movimiento largo hacia la derecha para probar el escáner de puertas
+    cout << "\n>>> INTENTANDO: Mover Bloque 1 hacia DERECHA (8 pasos)..." << endl;
+    MoveRight pruebaEscape(1, 8, &miTablero);
 
-    if (prueba2.isAppl(estadoActual)) {
-        cout << "[EXITO] Movimiento legal. Aplicando..." << endl;
-        State* estadoNuevo = prueba2.apply(estadoActual);
-        estadoNuevo->print();
+    if (pruebaEscape.isAppl(estadoActual)) {
+        cout << "[EXITO] Movimiento legal o escape detectado. Aplicando..." << endl;
+        State* estadoNuevo = pruebaEscape.apply(estadoActual);
+        
+        cout << "\n=== NUEVO ESTADO ===" << endl;
+        estadoNuevo->print(); 
+        
         delete estadoActual;
         estadoActual = estadoNuevo;
     } else {
-        cout << "[ERROR] Movimiento Ilegal! Chocaste con una pared o bloque." << endl;
+        cout << "[ERROR] Movimiento Ilegal! (La puerta no es del mismo color o hay bloques bloqueando)." << endl;
     }
 
     // Limpiamos la memoria al final
