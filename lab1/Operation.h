@@ -13,7 +13,6 @@ class Operation {
     int pasos;
     Tablero* tablero; // referencia al tablero para verificar la validez de la operación
     
-    Operation(); // nececitamos un constructor vacío para crear un arreglo de operaciones
     Operation(int b_id, int pasos, Tablero* tablero); // constructor con parámetros
     virtual ~Operation(); // destructor virtual para permitir la herencia
 
@@ -21,7 +20,8 @@ class Operation {
     virtual State* apply(State* current)= 0;
 
     bool hayBloqueEnPosicion(State* current, int x, int y, int excluido_id); // método para verificar si hay un bloque en una posición dada
-
+    bool esMiSalida(int x, int y, char miColor); // método para verificar si esta operación lleva al estado final
+    bool seEscapa(int new_x, int new_y, int b_id); // método para verificar si el bloque se escapa del tablero
 };
 
 
